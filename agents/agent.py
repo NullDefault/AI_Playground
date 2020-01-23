@@ -3,8 +3,8 @@ from abc import ABC
 
 class Agent(ABC):
 
-    def __init__(self, team):
-        self.team = team    # 0: O, 1: X
+    def __init__(self, name):
+        self.name = name
 
     def take_turn(self, game_board):
 

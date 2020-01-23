@@ -4,8 +4,8 @@ from pygame import event, MOUSEBUTTONUP, mouse
 
 class HumanPlayer(Agent):
 
-    def __init__(self, team):
-        Agent.__init__(self, team)
+    def __init__(self, name):
+        Agent.__init__(self, name)
 
     def take_turn(self, game_board):
         turn_choice = None
@@ -16,6 +16,9 @@ class HumanPlayer(Agent):
                     y = None
 
                     pos = mouse.get_pos()
+
+                    if pos[0] > 600 and pos[1] <= 100:
+                        return 'reset'
 
                     if 0 <= pos[0] <= 200:
                         x = 0
@@ -32,5 +35,9 @@ class HumanPlayer(Agent):
                         y = 2
 
                     turn_choice = x, y
+
+                    if x is None or y is None or game_board.cells[(x, y)].state is not -1:
+                        turn_choice = None
+
 
         return turn_choice
