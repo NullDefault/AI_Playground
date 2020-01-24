@@ -1,14 +1,59 @@
 import pygame
+import copy
 from agents.human_player import HumanPlayer
 from agents.random_agent import RandomAgent
+from agents.minimax_agent import MinMaxAgent, evaluate_board
 from fysom import Fysom
 
 
 class Board:
-    def __init__(self, rows, columns):
-        self.rows = rows
-        self.columns = columns
-        self.cells = self.init_cells(rows, columns)
+    def __init__(self, old_cells=None):
+        if old_cells is None:
+            self.cells = self.init_cells(3, 3)
+            self.board_state = Fysom({
+                'initial': 'x_turn',
+                'events': [
+                    {'name': 'x_turn_taken', 'src': 'x_turn', 'dst': 'o_turn'},
+                    {'name': 'o_turn_taken', 'src': 'o_turn', 'dst': 'x_turn'},
+                    {'name': 'x_wins', 'src': 'x_turn', 'dst': 'game_over'},
+                    {'name': 'o_wins', 'src': 'o_turn', 'dst': 'game_over'},
+                    {'name': 'reset', 'src': 'game_over', 'dst': 'x_turn'},
+                    {'name': 'draw', 'src': 'x_turn', 'dst': 'game_over'},
+                    {'name': 'draw', 'src': 'o_turn', 'dst': 'game_over'}
+                ]
+            })
+        elif old_cells:
+            self.cells = old_cells
+
+    @property
+    def possible_moves(self):
+        possible_moves = []
+        for cell in self.cells:
+            if self.cells[cell].state is -1:
+                possible_moves.append(cell)
+        return possible_moves
+
+    def copy_cells(self):   # MIGHT BE BROKEN
+        new_cells = {}
+
+        for cell in self.cells:
+            new_cell = BoardCell(cell, self.cells[cell].state)
+            new_cells[cell] = new_cell
+
+        return new_cells
+
+    def make_move(self, move, team):    # PROBABLY BROKEN
+        if self.cells[move].state is not -1:
+            return False
+
+        new_cells = self.copy_cells()
+
+        if team == 'x':
+            new_cells[move].set_x()
+        elif team == 'o':
+            new_cells[move].set_o()
+        new_board = Board(new_cells)
+        return new_board
 
     def init_cells(self, rows, columns):
         cells = {}
@@ -25,19 +70,19 @@ class Board:
 
         # check if previous move caused a win on vertical line
         if self.cells[(0, y)].state == self.cells[(1, y)].state == self.cells[(2, y)].state:
-            return True
+            return True, self.cells[(0, y)].state
 
         # check if previous move caused a win on horizontal line
         if self.cells[(x, 0)].state == self.cells[(x, 1)].state == self.cells[(x, 2)].state:
-            return True
+            return True, self.cells[(x, 0)].state
 
         # check if previous move was on the main diagonal and caused a win
         if x == y and self.cells[(0, 0)].state == self.cells[(1, 1)].state == self.cells[(2, 2)].state:
-            return True
+            return True, self.cells[(0, 0)].state
 
         # check if previous move was on the secondary diagonal and caused a win
         if x + y == 2 and self.cells[(0, 2)].state == self.cells[(1, 1)].state == self.cells[(2, 0)].state:
-            return True
+            return True, self.cells[(0, 2)].state
 
         for cell in self.cells:
             if self.cells[cell].state == -1:
@@ -45,7 +90,7 @@ class Board:
         else:
             return 'draw'
 
-        return False
+        return False, None
 
 
 ui_frame = pygame.image.load("assets/ui_frame.png")
@@ -67,8 +112,11 @@ o_win_loc = (620, 335)
 
 
 class BoardCell:
-    def __init__(self, loc):
-        self.state = -1  # -1 is empty, 0 is O, 1 is X
+    def __init__(self, loc, state=None):
+        if state:
+            self.state = state
+        else:
+            self.state = -1  # -1 is empty, 0 is O, 1 is X
         self.loc = loc   # The x, y coordinates of the cell on the game board
         self.image = self.update_sprite()
 
@@ -98,23 +146,10 @@ def main():
 
     row_num = 3
     column_num = 3
-    game_board = Board(row_num, column_num)
+    game_board = Board()
 
-    game_state = Fysom({
-        'initial': 'x_turn',
-        'events': [
-            {'name': 'x_turn_taken', 'src': 'x_turn', 'dst': 'o_turn'},
-            {'name': 'o_turn_taken', 'src': 'o_turn', 'dst': 'x_turn'},
-            {'name': 'x_wins', 'src': 'x_turn', 'dst': 'game_over'},
-            {'name': 'o_wins', 'src': 'o_turn', 'dst': 'game_over'},
-            {'name': 'reset', 'src': 'game_over', 'dst': 'x_turn'},
-            {'name': 'draw', 'src': 'x_turn', 'dst': 'game_over'},
-            {'name': 'draw', 'src': 'o_turn', 'dst': 'game_over'}
-        ]
-    })
-
-    players = (RandomAgent("RA 1"),   # X Player
-               RandomAgent("RA 2")    # O Player
+    players = (HumanPlayer('Hu'),   # X Player
+               HumanPlayer("Ru")   # O Player
                )
     winner = "None"
 
@@ -148,56 +183,57 @@ def main():
 
     while True:
 
-        if reset_game or game_state.current == 'draw':
+        if reset_game or game_board.board_state.current == 'draw':
             total_game_count = total_game_count + 1
             reset_game = False
-            game_board = Board(row_num, column_num)
+            game_board = Board()
 
         render()
         pygame.display.flip()
 
-        if game_state.current == 'x_turn':
+        if game_board.board_state.current == 'x_turn':
             move = players[0].take_turn(game_board)
             if move == 'reset':
                 reset_game = True
             elif move:
                 game_board.cells[move].set_x()
-
                 win = game_board.check_win_con(move)
-                if win:
+
+                if win[0]:
                     if win == 'draw':
-                        game_state.trigger('draw')
+                        game_board.board_state.trigger('draw')
                     else:
-                        game_state.trigger('x_wins')
+                        game_board.board_state.trigger('x_wins')
                         winner = players[0].name
                         x_win_count = x_win_count + 1
+
                 else:
-                    game_state.trigger('x_turn_taken')
+                    game_board.board_state.trigger('x_turn_taken')
             else:
                 pass
 
-        elif game_state.current == 'o_turn':
+        elif game_board.board_state.current == 'o_turn':
             move = players[1].take_turn(game_board)
             if move == 'reset':
                 reset_game = True
             elif move:
                 game_board.cells[move].set_o()
                 win = game_board.check_win_con(move)
-                if win:
+                if win[0]:
                     if win == 'draw':
-                        game_state.trigger('draw')
+                        game_board.board_state.trigger('draw')
                     else:
-                        game_state.trigger('o_wins')
+                        game_board.board_state.trigger('o_wins')
                         winner = players[1].name
                         o_win_count = o_win_count + 1
                 else:
-                    game_state.trigger('o_turn_taken')
+                    game_board.board_state.trigger('o_turn_taken')
             else:
                 pass
 
-        elif game_state.current == 'game_over':
+        elif game_board.board_state.current == 'game_over':
             reset_game = True
-            game_state.trigger('reset')
+            game_board.board_state.trigger('reset')
 
 
 if __name__ == "__main__":
