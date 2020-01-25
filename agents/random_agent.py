@@ -1,3 +1,7 @@
+'''
+This agent just randomly picks an open cell when its their turn to make a move
+'''
+
 from agents.agent import Agent
 import random
 

@@ -1,3 +1,7 @@
+'''
+Agent that uses the minimax algorithm to make their moves
+'''
+
 from agents.agent import Agent
 
 
@@ -8,53 +12,52 @@ def flip_team(team):
         return 'x'
 
 
-def evaluate_board(game_board, max):
+def evaluate_board(game_board, maximizer):
 
     cells = game_board.cells
 
-    if max == 'x':
-        max = 1
-        mini = 0
-    elif max == 'o':
-        max = 0
-        mini = 1
+    # States are encoded as 1 and 0 so we need to do a little translation here
+    if maximizer == 'x':
+        maximizer = 1
+    elif maximizer == 'o':
+        maximizer = 0
 
     # Checking for Rows for X or O victory.
     for row in range(0, 3):
 
         if cells[row, 0].state == cells[row, 1].state and cells[row, 1].state == cells[row, 2].state:
 
-            if cells[row, 0].state == max:
+            if cells[row, 0].state == maximizer:
                 return 10
-            elif cells[row, 0].state == mini:
+            else:
                 return -10
 
-                # Checking for Columns for X or O victory.
+    # Checking for Columns for X or O victory.
     for col in range(0, 3):
 
         if cells[0, col].state == cells[1, col].state and cells[1, col].state == cells[2, col].state:
 
-            if cells[0, col].state == max:
+            if cells[0, col].state == maximizer:
                 return 10
-            elif cells[0, col].state == mini:
+            else:
                 return -10
 
-                # Checking for Diagonals for X or O victory.
+    # Checking for Diagonals for X or O victory.
     if cells[0, 0].state == cells[1, 1].state and cells[1, 1].state == cells[2, 2].state:
 
-        if cells[0, 0].state == max:
+        if cells[0, 0].state == maximizer:
             return 10
-        elif cells[0, 0].state == mini:
+        else:
             return -10
 
     if cells[0, 2].state == cells[1, 1].state and cells[1, 1].state == cells[2, 0].state:
 
-        if cells[0, 2].state == max:
+        if cells[0, 2].state == maximizer:
             return 10
-        elif cells[0, 2].state == mini:
+        else:
             return -10
 
-            # Else if none of them have won then return 0
+    # Else if none of them have won then return 0
     return 0
 
 

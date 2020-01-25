@@ -10,7 +10,7 @@ class Board:
     def __init__(self, old_cells=None):
         if old_cells is None:
             self.cells = self.init_cells(3, 3)
-            self.board_state = Fysom({
+            self.board_state = Fysom({      # Game flow is controlled using a finite state machine
                 'initial': 'x_turn',
                 'events': [
                     {'name': 'x_turn_taken', 'src': 'x_turn', 'dst': 'o_turn'},
@@ -22,38 +22,16 @@ class Board:
                     {'name': 'draw', 'src': 'o_turn', 'dst': 'game_over'}
                 ]
             })
-        elif old_cells:
+        elif old_cells:     # This allows us to copy boards
             self.cells = old_cells
 
-    @property
+    @property               # Returns moves that are currently possible
     def possible_moves(self):
         possible_moves = []
         for cell in self.cells:
             if self.cells[cell].state is -1:
                 possible_moves.append(cell)
         return possible_moves
-
-    def copy_cells(self):   # MIGHT BE BROKEN
-        new_cells = {}
-
-        for cell in self.cells:
-            new_cell = BoardCell(cell, self.cells[cell].state)
-            new_cells[cell] = new_cell
-
-        return new_cells
-
-    def make_move(self, move, team):    # PROBABLY BROKEN
-        if self.cells[move].state is not -1:
-            return False
-
-        new_cells = self.copy_cells()
-
-        if team == 'x':
-            new_cells[move].set_x()
-        elif team == 'o':
-            new_cells[move].set_o()
-        new_board = Board(new_cells)
-        return new_board
 
     def init_cells(self, rows, columns):
         cells = {}
