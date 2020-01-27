@@ -1,7 +1,7 @@
 import pygame
 from agents.human_player import HumanPlayer
 from agents.random_agent import RandomAgent
-from agents.minimax_agent import MinMaxAgent, read_board
+from agents.minimax_agent import MinMaxAgent
 from fysom import Fysom
 
 
@@ -64,6 +64,7 @@ class Board:
 
 ui_frame = pygame.image.load("assets/ui_frame.png")
 empty_sprite = pygame.image.load("assets/empty_sprite.png")
+bg_img = pygame.image.load("assets/bg_img.png")
 x_sprite = pygame.image.load("assets/x_sprite.png")
 o_sprite = pygame.image.load("assets/o_sprite.png")
 
@@ -78,6 +79,7 @@ x_win_count_loc = (600, 200)
 x_win_loc = (620, 235)
 o_win_count_loc = (600, 300)
 o_win_loc = (620, 335)
+bg_loc = (600, 400)
 
 
 class BoardCell:
@@ -117,8 +119,8 @@ def main():
     column_num = 3
     game_board = Board()
 
-    players = (RandomAgent('RA'),   # X Player
-               MinMaxAgent('MM', 'o')  # O Player
+    players = (MinMaxAgent('MM1', 'x'),   # X Player
+               MinMaxAgent('MM2', 'o')  # O Player
                )
     winner = "None"
 
@@ -131,6 +133,7 @@ def main():
     def render():
         for r in range(row_num):
             for c in range(column_num):
+
                 cell = game_board.cells[(r, c)]
                 game_surface.blit(cell.image, (cell.loc[0]*200, cell.loc[1]*200))
 
@@ -149,6 +152,8 @@ def main():
         game_surface.blit(ui_frame, o_win_count_loc)
         o_win_count_text = game_font.render(players[1].name+" Wins " + str(o_win_count), False, [0, 0, 0], None)
         game_surface.blit(o_win_count_text, o_win_loc)
+
+        game_surface.blit(bg_img, bg_loc)
 
     while True:
 

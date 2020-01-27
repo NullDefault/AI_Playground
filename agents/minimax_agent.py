@@ -3,6 +3,7 @@ Agent that uses the minimax algorithm to make their moves
 '''
 
 from agents.agent import Agent
+from random import randint
 
 '''
 col:     0  1  2  
@@ -47,7 +48,16 @@ def are_there_moves_left(board_array):
         return False
 
 
-class Move():
+def is_it_first_turn(board_array):
+    for i in range(3):
+        for j in range(3):
+            if board_array[i][j] != -1:
+                return False
+    else:
+        return True
+
+
+class Move:
     def __init__(self, row, column):
         self.row = row
         self.column = column
@@ -65,10 +75,17 @@ class MinMaxAgent(Agent):
 
     def take_turn(self, game_board):
         board = read_board(game_board)
+        # If it's the first turn, we randomly choose one of the cells
+        if is_it_first_turn(board):
+            x = randint(0, 2)
+            y = randint(0, 2)
+            return x, y
+        # Otherwise we use minmax
         turn_choice = self.find_best_move(board)
         return turn_choice
 
     def find_best_move(self, board):
+
         if self.team == 'x':
             team = 1
         elif self.team == 'o':
