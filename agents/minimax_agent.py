@@ -4,101 +4,173 @@ Agent that uses the minimax algorithm to make their moves
 
 from agents.agent import Agent
 
+'''
+col:     0  1  2  
+row:  0 [0][1][2]
+      1 [3][4][5]
+      2 [6][7][8]
+'''
 
-def flip_team(team):
-    if team == 'x':
-        return 'o'
+
+def read_board(game_board):  # Reads the board and parses it into an array
+    r, c = 3, 3
+    board_array = [[0 for x in range(c)] for y in range(r)]
+
+    for cell in game_board.cells:
+        if cell == (0, 0):
+            board_array[0][0] = game_board.cells[cell].state
+        elif cell == (0, 1):
+            board_array[0][1] = game_board.cells[cell].state
+        elif cell == (0, 2):
+            board_array[0][2] = game_board.cells[cell].state
+        elif cell == (1, 0):
+            board_array[1][0] = game_board.cells[cell].state
+        elif cell == (1, 1):
+            board_array[1][1] = game_board.cells[cell].state
+        elif cell == (1, 2):
+            board_array[1][2] = game_board.cells[cell].state
+        elif cell == (2, 0):
+            board_array[2][0] = game_board.cells[cell].state
+        elif cell == (2, 1):
+            board_array[2][1] = game_board.cells[cell].state
+        elif cell == (2, 2):
+            board_array[2][2] = game_board.cells[cell].state
+    return board_array
+
+
+def are_there_moves_left(board_array):
+    for i in range(3):
+        for j in range(3):
+            if board_array[i][j] == -1:
+                return True
     else:
-        return 'x'
+        return False
 
 
-def evaluate_board(game_board, maximizer):
-
-    cells = game_board.cells
-
-    # States are encoded as 1 and 0 so we need to do a little translation here
-    if maximizer == 'x':
-        maximizer = 1
-    elif maximizer == 'o':
-        maximizer = 0
-
-    # Checking for Rows for X or O victory.
-    for row in range(0, 3):
-
-        if cells[row, 0].state == cells[row, 1].state and cells[row, 1].state == cells[row, 2].state:
-
-            if cells[row, 0].state == maximizer:
-                return 10
-            else:
-                return -10
-
-    # Checking for Columns for X or O victory.
-    for col in range(0, 3):
-
-        if cells[0, col].state == cells[1, col].state and cells[1, col].state == cells[2, col].state:
-
-            if cells[0, col].state == maximizer:
-                return 10
-            else:
-                return -10
-
-    # Checking for Diagonals for X or O victory.
-    if cells[0, 0].state == cells[1, 1].state and cells[1, 1].state == cells[2, 2].state:
-
-        if cells[0, 0].state == maximizer:
-            return 10
-        else:
-            return -10
-
-    if cells[0, 2].state == cells[1, 1].state and cells[1, 1].state == cells[2, 0].state:
-
-        if cells[0, 2].state == maximizer:
-            return 10
-        else:
-            return -10
-
-    # Else if none of them have won then return 0
-    return 0
+class Move():
+    def __init__(self, row, column):
+        self.row = row
+        self.column = column
 
 
 class MinMaxAgent(Agent):
 
     def __init__(self, name, team):
         self.team = team
+        if team == 'x':
+            self.opponent = 'o'
+        else:
+            self.opponent = 'x'
         Agent.__init__(self, name)
 
     def take_turn(self, game_board):
-        turn_choice = self.minimax(game_board, 0, self.team)
+        board = read_board(game_board)
+        turn_choice = self.find_best_move(board)
         return turn_choice
 
-    def minimax(self, board, depth, maximizing_player):
-        terminal_state = evaluate_board(board, maximizing_player)
-        if terminal_state:
-            return terminal_state
+    def find_best_move(self, board):
+        if self.team == 'x':
+            team = 1
+        elif self.team == 'o':
+            team = 0
 
-        if maximizing_player == self.team:      # TODO: save the best move
-            best_val = -100000
-            best_move = None
-            for move in board.possible_moves:
-                if board.cells[move].state is -1:
-                    new_board = board.make_move(move, self.team)
-                    value = self.minimax(new_board, depth + 1, self.team)
-                    if type(value) is tuple:
-                        return value
-                    elif value >= best_val:
-                        best_val = value
-                        best_move = move
-            return best_move
+        best_value = -1000
+        best_move = Move(-1, -1)
+
+        for i in range(3):
+            for j in range(3):
+                if board[i][j] == -1:
+
+                    board[i][j] = team
+
+                    move_value = self.minimax(board, 0, False)
+
+                    board[i][j] = -1
+
+                    if move_value > best_value:
+                        best_move.row = i
+                        best_move.column = j
+                        best_value = move_value
+
+        return best_move.row, best_move.column
+
+    def minimax(self, board, depth, is_maximizing_player):
+        if self.team == 'x':
+            team = 1
+            opponent = 0
+        elif self.team == 'o':
+            team = 0
+            opponent = 1
+
+        board_score = self.evaluate_board(board)
+
+        if board_score is not 0:
+            return board_score - depth
+
+        if not are_there_moves_left(board):
+            return 0
+
+        if is_maximizing_player:
+            best_value = -1000
+
+            for i in range(3):
+                for j in range(3):
+                    if board[i][j] == -1:
+                        board[i][j] = team
+
+                        best_value = max(best_value, self.minimax(board, depth+1, not is_maximizing_player))
+
+                        board[i][j] = -1
+
+            return best_value
+
         else:
-            best_val = 100000
-            best_move = None
-            for move in board.possible_moves:
-                if board.cells[move].state is -1:
-                    new_board = board.make_move(move, self.team)
-                    value = self.minimax(new_board, depth + 1, self.team)
-                    if type(value) is tuple:
-                        return value
-                    elif value < best_val:
-                        best_val = value
-                        best_move = move
-            return best_move
+            best_value = 1000
+
+            for i in range(3):
+                for j in range(3):
+                    if board[i][j] == -1:
+                        board[i][j] = opponent
+
+                        best_value = min(best_value, self.minimax(board, depth+1, not is_maximizing_player))
+
+                        board[i][j] = -1
+
+            return best_value
+
+    def evaluate_board(self, board_array):
+
+        if self.team == 'x':
+            team = 1
+            opponent = 0
+        elif self.team == 'o':
+            team = 0
+            opponent = 1
+
+        for row in range(3):
+            if board_array[row][0] == board_array[row][1] == board_array[row][2]:
+                if board_array[row][0] == team:
+                    return +10
+                elif board_array[row][0] == opponent:
+                    return -10
+
+        for column in range(3):
+            if board_array[0][column] == board_array[1][column] == board_array[2][column]:
+                if board_array[0][column] == team:
+                    return +10
+                elif board_array[0][column] == opponent:
+                    return -10
+
+        if board_array[0][0] == board_array[1][1] == board_array[2][2]:
+            if board_array[0][0] == team:
+                return +10
+            elif board_array[0][0] == opponent:
+                return -10
+
+        if board_array[0][2] == board_array[1][1] == board_array[2][0]:
+            if board_array[0][2] == team:
+                return +10
+            elif board_array[0][2] == opponent:
+                return -10
+
+        return 0

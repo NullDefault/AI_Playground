@@ -1,8 +1,7 @@
 import pygame
-import copy
 from agents.human_player import HumanPlayer
 from agents.random_agent import RandomAgent
-from agents.minimax_agent import MinMaxAgent, evaluate_board
+from agents.minimax_agent import MinMaxAgent, read_board
 from fysom import Fysom
 
 
@@ -25,14 +24,6 @@ class Board:
         elif old_cells:     # This allows us to copy boards
             self.cells = old_cells
 
-    @property               # Returns moves that are currently possible
-    def possible_moves(self):
-        possible_moves = []
-        for cell in self.cells:
-            if self.cells[cell].state is -1:
-                possible_moves.append(cell)
-        return possible_moves
-
     def init_cells(self, rows, columns):
         cells = {}
 
@@ -48,19 +39,19 @@ class Board:
 
         # check if previous move caused a win on vertical line
         if self.cells[(0, y)].state == self.cells[(1, y)].state == self.cells[(2, y)].state:
-            return True, self.cells[(0, y)].state
+            return True
 
         # check if previous move caused a win on horizontal line
         if self.cells[(x, 0)].state == self.cells[(x, 1)].state == self.cells[(x, 2)].state:
-            return True, self.cells[(x, 0)].state
+            return True
 
         # check if previous move was on the main diagonal and caused a win
         if x == y and self.cells[(0, 0)].state == self.cells[(1, 1)].state == self.cells[(2, 2)].state:
-            return True, self.cells[(0, 0)].state
+            return True
 
         # check if previous move was on the secondary diagonal and caused a win
         if x + y == 2 and self.cells[(0, 2)].state == self.cells[(1, 1)].state == self.cells[(2, 0)].state:
-            return True, self.cells[(0, 2)].state
+            return True
 
         for cell in self.cells:
             if self.cells[cell].state == -1:
@@ -68,7 +59,7 @@ class Board:
         else:
             return 'draw'
 
-        return False, None
+        return False
 
 
 ui_frame = pygame.image.load("assets/ui_frame.png")
@@ -126,8 +117,8 @@ def main():
     column_num = 3
     game_board = Board()
 
-    players = (HumanPlayer('Hu'),   # X Player
-               HumanPlayer("Ru")   # O Player
+    players = (RandomAgent('RA'),   # X Player
+               MinMaxAgent('MM', 'o')  # O Player
                )
     winner = "None"
 
@@ -177,7 +168,7 @@ def main():
                 game_board.cells[move].set_x()
                 win = game_board.check_win_con(move)
 
-                if win[0]:
+                if win:
                     if win == 'draw':
                         game_board.board_state.trigger('draw')
                     else:
@@ -197,7 +188,7 @@ def main():
             elif move:
                 game_board.cells[move].set_o()
                 win = game_board.check_win_con(move)
-                if win[0]:
+                if win:
                     if win == 'draw':
                         game_board.board_state.trigger('draw')
                     else:
