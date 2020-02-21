@@ -119,7 +119,7 @@ def main():
     column_num = 3
     game_board = Board()
 
-    players = (MinMaxAgent('MM1', 'x'),   # X Player
+    players = (HumanPlayer('HP1'),   # X Player
                MinMaxAgent('MM2', 'o')  # O Player
                )
     winner = "None"
