@@ -1,12 +1,12 @@
-# TicTacToe AI
-Pygame environment for testing a variety of algorithms to play tic tac toe
+# AI Playground
+A collection of various small AI projects.
 ## Table of Contents
 * [General info](#general-info)
 * [Features](#features)
 * [Setup](#setup)
 * [Screenshots](#screenshots)
 ### General info
-It's tic tac toe and algorithms that play it. Oh, there's a GUI also.
+So far I have tic tac toe and algorithms that play it. Oh, there's a GUI also.
 - Language: Python
 - Libraries: pygame for rendering
 ### Features
