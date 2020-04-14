@@ -1,7 +1,6 @@
 import pygame
-from agents.human_player import HumanPlayer
-from agents.random_agent import RandomAgent
-from agents.minimax_agent import MinMaxAgent
+from agents.ttt_agents.human_player import HumanPlayer
+from agents.ttt_agents.minimax_agent import MinMaxAgent
 from fysom import Fysom
 
 
@@ -62,11 +61,11 @@ class Board:
         return False
 
 
-ui_frame = pygame.image.load("assets/ui_frame.png")
-empty_sprite = pygame.image.load("assets/empty_sprite.png")
-bg_img = pygame.image.load("assets/bg_img.png")
-x_sprite = pygame.image.load("assets/x_sprite.png")
-o_sprite = pygame.image.load("assets/o_sprite.png")
+ui_frame = pygame.image.load("assets/ttt_assets/ui_frame.png")
+empty_sprite = pygame.image.load("assets/ttt_assets/empty_sprite.png")
+bg_img = pygame.image.load("assets/ttt_assets/bg_img.png")
+x_sprite = pygame.image.load("assets/ttt_assets/x_sprite.png")
+o_sprite = pygame.image.load("assets/ttt_assets/o_sprite.png")
 
 pygame.font.init()
 game_font = pygame.font.Font("assets/m5x7.ttf", 35)

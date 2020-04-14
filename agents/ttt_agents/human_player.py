@@ -2,7 +2,7 @@
 Allows to add a human player who takes turns manually through mouse inputs
 '''
 
-from agents.agent import Agent
+from agents.ttt_agents.agent import Agent
 from pygame import event, MOUSEBUTTONUP, mouse
 
 
