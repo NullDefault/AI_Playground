@@ -1,12 +1,12 @@
 import random
 import matplotlib.pyplot as plt
 
-population_size = 200                                # individuals in one generation
+population_size = 100                                # individuals in one generation
 population = [None] * population_size
 avg_scores = []
 best_scores = []
 gene_length = 10                                     # the size of the "bingo" board for dice rolling
-mutation_rate = 0.001                                # how often do genes mutate during reproduction
+mutation_rate = 0.01                                # how often do genes mutate during reproduction
 valid_genes = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]   # possible gene values
 possibilities = [2,
                  3, 3,
@@ -143,20 +143,40 @@ def show_results(iters):
     """
     Prints the average values in the final genotype arrays.
     """
-    indexes = [[] for x in range(population_size)]
+    indexes = [[] for x in range(gene_length)]
+    freq_count = {
+        2: 0,
+        3: 0,
+        4: 0,
+        5: 0,
+        6: 0,
+        7: 0,
+        8: 0,
+        9: 0,
+        10: 0,
+        11: 0,
+        12: 0
+    }
 
     for p in population:
         p.genes = sorted(p.genes)
         print(p.genes)
         for y in range(gene_length):
-            indexes[y].append(p.genes[y])
+            gene = p.genes[y]
+            indexes[y].append(gene)
+            freq_count[gene] = freq_count[gene] + 1
 
-    results = [None] * gene_length
+    avg_index_values = [None] * gene_length
 
     for i in range(gene_length):
-        results[i] = sum(indexes[i]) / len(indexes[i])
+        avg_index_values[i] = sum(indexes[i]) / len(indexes[i])
     print("----------------------------------------------------------")
-    print(results)
+    print(avg_index_values)
+
+    f, ax = plt.subplots()
+    plt.bar(list(freq_count.keys()), list(freq_count.values()))
+    ax.set_xticks(range(2, 13))
+    plt.show()
 
     plt.plot([l for l in range(iters)], avg_scores, label="Average raw fitness")
     plt.plot([h for h in range(iters)], best_scores, label="Best fitness average")
@@ -164,6 +184,9 @@ def show_results(iters):
     plt.ylabel('Raw Fitness')
     plt.title('Raw Fitness vs Time')
     plt.legend()
+    plt.show()
+
+    plt.plot(valid_genes, list(freq_count.values()))
     plt.show()
 
 
