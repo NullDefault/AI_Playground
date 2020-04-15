@@ -1,9 +1,10 @@
 import random
 import matplotlib.pyplot as plt
 
-population_size = 100                                # individuals in one generation
+population_size = 200                                # individuals in one generation
 population = [None] * population_size
 avg_scores = []
+best_scores = []
 gene_length = 10                                     # the size of the "bingo" board for dice rolling
 mutation_rate = 0.001                                # how often do genes mutate during reproduction
 valid_genes = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]   # possible gene values
@@ -41,15 +42,16 @@ class Genotype:
     :param other: The Genotype to reproduce with
     :return: Child gene array
     """
-    def breed_with(self, other):
+    def breed_with(self, other, mutate):
         # Pick a random index at which we will splice the parent dna
         split = random.randint(0, gene_length)
         # Create a hybrid array by splicing the parent dna
         new_dna = self.genes[0:split] + other.genes[split: gene_length]
         # Mutate the array in order to introduce new genes into the population
-        for g in range(gene_length):
-            if random.random() < mutation_rate:
-                new_dna[g] = random.choice(valid_genes)
+        if mutate:
+            for g in range(gene_length):
+                if random.random() < mutation_rate:
+                    new_dna[g] = random.choice(valid_genes)
 
         return new_dna
 
@@ -79,7 +81,7 @@ def get_game_scores():
             roll = random.choice(possibilities)
             if roll in temp:
                 temp.remove(roll)
-            if temp.__len__() == 0 or count >= population_size:
+            if temp.__len__() == 0:
                 done = True
         p.fitness = count
 
@@ -95,7 +97,7 @@ def calculate_true_fitness(fitness):
     return int(pow((population_size/fitness), 2))
 
 
-def next_generation():
+def next_generation(last_gen):
     """
     Creates the next generation by breeding the old generation.
     """
@@ -108,22 +110,23 @@ def next_generation():
 
     for v in range(population_size):
         parent_a = random.choice(mating_pool)
-        parent_b = random.choice(mating_pool)
-        baby = Genotype(parent_a.breed_with(parent_b))
+        parent_b = random.choice(mating_pool)       # If its the last generation, no one will mutate
+        baby = Genotype(parent_a.breed_with(parent_b, not last_gen))
         population[v] = baby
 
 
-def get_most_fit():
+def get_avg_of_best_fit():
     """
-    :return: Best (which means lowest in this context) raw fitness score within the population
+    :return: Returns the average of 10 best scores in the generation
     """
-    top_score = population_size
-    best = None
+    best = [500, 500, 500, 500, 500, 500, 500, 500, 500, 500]
     for u in population:
-        if u.fitness < top_score:
-            top_score = u.fitness
-            best = u
-    return best
+        for b in range(10):
+            if u.fitness < best[b]:
+                best[b] = u.fitness
+                break
+
+    return sum(best)/10
 
 
 def get_avg_fit():
@@ -136,14 +139,15 @@ def get_avg_fit():
     return total/population_size
 
 
-def show_results():
+def show_results(iters):
     """
     Prints the average values in the final genotype arrays.
     """
-    indexes = [[], [], [], [], [], [], [], [], [], []]
+    indexes = [[] for x in range(population_size)]
 
     for p in population:
         p.genes = sorted(p.genes)
+        print(p.genes)
         for y in range(gene_length):
             indexes[y].append(p.genes[y])
 
@@ -151,62 +155,35 @@ def show_results():
 
     for i in range(gene_length):
         results[i] = sum(indexes[i]) / len(indexes[i])
-
+    print("----------------------------------------------------------")
     print(results)
 
+    plt.plot([l for l in range(iters)], avg_scores, label="Average raw fitness")
+    plt.plot([h for h in range(iters)], best_scores, label="Best fitness average")
+    plt.xlabel('Iteration')
+    plt.ylabel('Raw Fitness')
+    plt.title('Raw Fitness vs Time')
+    plt.legend()
+    plt.show()
 
-def run_iteration():
+
+def run_iteration(l_g):
     get_game_scores()  # Calculate fitness for all individuals in the population
     avg_score = get_avg_fit()
+    best_score = get_avg_of_best_fit()
     avg_scores.append(avg_score)
-    next_generation()  # Reproduce and create next generation
+    best_scores.append(best_score)
+    next_generation(l_g)  # Reproduce and create next generation
 
 
 if __name__ == '__main__':
     iterations = 1000
     make_initial_population()
     for iteration in range(iterations):
-        run_iteration()
-    show_results()
-    plt.plot([l for l in range(iterations)], avg_scores)
-    plt.show()
+        if iteration == iterations:
+            last_gen = True
+        else:
+            last_gen = False
+        run_iteration(last_gen)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    show_results(iterations)
