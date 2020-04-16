@@ -63,7 +63,7 @@ def make_initial_population():
     for n in range(population_size):
         new_genes = [None] * gene_length
         for z in range(gene_length):
-            new_genes[z] = random.choice(possibilities)
+            new_genes[z] = random.choice(valid_genes)
         population[n] = Genotype(new_genes)
 
 
