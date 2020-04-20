@@ -13,36 +13,10 @@ row:  0 [0][1][2]
 '''
 
 
-def read_board(game_board):  # Reads the board and parses it into an array
-    r, c = 3, 3
-    board_array = [[0 for x in range(c)] for y in range(r)]
-
-    for cell in game_board.cells:
-        if cell == (0, 0):
-            board_array[0][0] = game_board.cells[cell].state
-        elif cell == (0, 1):
-            board_array[0][1] = game_board.cells[cell].state
-        elif cell == (0, 2):
-            board_array[0][2] = game_board.cells[cell].state
-        elif cell == (1, 0):
-            board_array[1][0] = game_board.cells[cell].state
-        elif cell == (1, 1):
-            board_array[1][1] = game_board.cells[cell].state
-        elif cell == (1, 2):
-            board_array[1][2] = game_board.cells[cell].state
-        elif cell == (2, 0):
-            board_array[2][0] = game_board.cells[cell].state
-        elif cell == (2, 1):
-            board_array[2][1] = game_board.cells[cell].state
-        elif cell == (2, 2):
-            board_array[2][2] = game_board.cells[cell].state
-    return board_array
-
-
 def are_there_moves_left(board_array):
     for i in range(3):
         for j in range(3):
-            if board_array[i][j] == -1:
+            if board_array[(i, j)] == -1:
                 return True
     else:
         return False
@@ -51,7 +25,7 @@ def are_there_moves_left(board_array):
 def is_it_first_turn(board_array):
     for i in range(3):
         for j in range(3):
-            if board_array[i][j] != -1:
+            if board_array[(i, j)] != -1:
                 return False
     else:
         return True
@@ -74,7 +48,7 @@ class MinMaxAgent(Agent):
         Agent.__init__(self, name)
 
     def take_turn(self, game_board):
-        board = read_board(game_board)
+        board = game_board.cells
         # If it's the first turn, we randomly choose one of the cells
         if is_it_first_turn(board):
             x = randint(0, 2)
