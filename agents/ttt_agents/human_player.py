@@ -39,9 +39,7 @@ class HumanPlayer(Agent):
                         y = 2
 
                     turn_choice = x, y
-
-                    if x is None or y is None or game_board.cells[(x, y)].state is not -1:
+                    if x is None or y is None or game_board.cells[(x, y)] != -1:
                         turn_choice = None
-
 
         return turn_choice

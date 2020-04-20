@@ -19,7 +19,7 @@ class RandomAgent(Agent):
             y = random.randint(0, 2)
             turn_choice = x, y
 
-            if game_board.cells[(x, y)].state is not -1:
+            if game_board.cells[(x, y)] != -1:
                 turn_choice = None
 
         return turn_choice
