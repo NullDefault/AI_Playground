@@ -2,21 +2,21 @@
 A collection of various small AI projects.
 ## Table of Contents
 * [General info](#general-info)
-* [Features](#features)
-* [Setup](#setup)
+* [Projects in the Repo](#projects)
 * [Screenshots](#screenshots)
 ### General info
-So far I have tic tac toe and algorithms that play it. Oh, there's a GUI also.
+This is my all purpose repo for AI-related projects. I use it to back up my work and catalog my exploration of the field.
 - Language: Python
 - Libraries: pygame for rendering
-### Features
-- MinMax Algorithm
-- Human Players
-- Random Agents
-- (NOT YET IMPLEMENTED) Neural Net Agent
-### Setup
-Clone the repository, install pygame and if you do not have it and then run main.
+### Projects
+- MinMax Algorithm for Tic Tac Toe
+- Deep Q Learning Agent for Tic Tac Toe
+- Genetic Algorithm for Dice Bingo
+- Basic Q Learning Tutorial Code
+
 ### Screenshots
-![Screenshot 1](./screenshots/screenshot1.png)
+MinMaxDemo
+![minmaxdemo](./screenshots/minmax_demo.gif)
+Note: Both agents play a perfect game so the games always end in a draw.
 
 
