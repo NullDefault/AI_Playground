@@ -77,27 +77,8 @@ class Map:
     def __init__(self, x_dim, y_dim, scale):
         self.map_data = generate_map(x_dim, y_dim, scale)
 
-    def render(self, dimensions):
+    def render(self):
         ms = pygame.surfarray.make_surface(self.map_data)
-        ms = pygame.transform.scale(ms, dimensions)
         pygame.PixelArray(ms).replace(255, (15, 163, 64))
         pygame.PixelArray(ms).replace((0, 0, 85, 255), (166, 162, 116))
         return ms
-
-
-dimensions = (1600, 800)
-s = 10
-map = Map(dimensions[0], dimensions[1], s)
-surf = pygame.display.set_mode((dimensions[0]+100, dimensions[1]+100))
-
-
-running = True
-while running:
-    map_surf = map.render(dimensions)
-    surf.blit(map_surf, (50, 50))
-
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-    pygame.display.update()
-pygame.quit()
