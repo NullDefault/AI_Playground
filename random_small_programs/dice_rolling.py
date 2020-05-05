@@ -5,8 +5,8 @@ population_size = 100                                # individuals in one genera
 population = [None] * population_size
 avg_scores = []
 best_scores = []
-gene_length = 10                                     # the size of the "bingo" board for dice rolling
-mutation_rate = 0.01                                # how often do genes mutate during reproduction
+gene_length = 25                                     # the size of the "bingo" board for dice rolling
+mutation_rate = 0.001                                # how often do genes mutate during reproduction
 valid_genes = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]   # possible gene values
 possibilities = [2,
                  3, 3,
@@ -176,18 +176,38 @@ def show_results(iters):
     f, ax = plt.subplots()
     plt.bar(list(freq_count.keys()), list(freq_count.values()))
     ax.set_xticks(range(2, 13))
-    plt.show()
+    plt.xlabel('Bingo Card Value')
+    plt.ylabel('Number of Occurrences')
+    plt.title('Population Size: '+str(population_size)+", Bingo Values: "+str(gene_length))
+    plt.legend()
+    plt.show(block=True)
 
     plt.plot([l for l in range(iters)], avg_scores, label="Average raw fitness")
     plt.plot([h for h in range(iters)], best_scores, label="Best fitness average")
     plt.xlabel('Iteration')
     plt.ylabel('Raw Fitness')
-    plt.title('Raw Fitness vs Time')
+    plt.title('Population Size: ' + str(population_size) + ", Bingo Values: " + str(gene_length))
     plt.legend()
-    plt.show()
+    plt.show(block=True)
 
-    plt.plot(valid_genes, list(freq_count.values()))
-    plt.show()
+    for key in freq_count.keys():
+        freq_count[key] = freq_count[key] / (population_size * gene_length)
+
+    true_probs = {
+        2: 1/36,
+        3: 2/36,
+        4: 3/36,
+        5: 4/36,
+        6: 5/36,
+        7: 6/36,
+        8: 5/36,
+        9: 4/36,
+        10: 3/36,
+        11: 2/36,
+        12: 1/36
+    }
+    plt.plot(list(freq_count.keys()), list(freq_count.values()))
+    plt.plot(list(true_probs.keys()), list(true_probs.values()))
 
 
 def run_iteration(l_g):
@@ -200,7 +220,7 @@ def run_iteration(l_g):
 
 
 if __name__ == '__main__':
-    iterations = 1000
+    iterations = 10000
     make_initial_population()
     for iteration in range(iterations):
         if iteration == iterations:
