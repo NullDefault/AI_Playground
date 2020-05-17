@@ -1,13 +1,18 @@
 import pygame
+import numpy as np
 from agents.ttt_agents.human_player import HumanPlayer
 from agents.ttt_agents.minimax_agent import MinMaxAgent
 from fysom import Fysom
+from matplotlib import pyplot as plt
+
+from agents.ttt_agents.qn_agent import QNAgent
+from agents.ttt_agents.random_agent import RandomAgent
 
 
 class Board:
     def __init__(self, old_cells=None):
         if old_cells is None:
-            self.cells = self.init_cells(3, 3)
+            self.cells = self.init_cells(3)
             self.board_state = Fysom({      # Game flow is controlled using a finite state machine
                 'initial': 'x_turn',
                 'events': [
@@ -23,42 +28,34 @@ class Board:
         elif old_cells:     # This allows us to copy boards
             self.cells = old_cells
 
-    def init_cells(self, rows, columns):
-        cells = {}
-
-        for r in range(rows):
-            for c in range(columns):
-                cells[(r, c)] = BoardCell((r, c))
-
-        return cells
+    def init_cells(self, size):
+        return np.full(shape=(size, size), fill_value=-1)
 
     def check_win_con(self, last_move):
         x = last_move[0]
         y = last_move[1]
 
         # check if previous move caused a win on vertical line
-        if self.cells[(0, y)].state == self.cells[(1, y)].state == self.cells[(2, y)].state:
+        if self.cells[(0, y)] == self.cells[(1, y)] == self.cells[(2, y)]:
             return True
 
         # check if previous move caused a win on horizontal line
-        if self.cells[(x, 0)].state == self.cells[(x, 1)].state == self.cells[(x, 2)].state:
+        if self.cells[(x, 0)] == self.cells[(x, 1)] == self.cells[(x, 2)]:
             return True
 
         # check if previous move was on the main diagonal and caused a win
-        if x == y and self.cells[(0, 0)].state == self.cells[(1, 1)].state == self.cells[(2, 2)].state:
+        if x == y and self.cells[(0, 0)] == self.cells[(1, 1)] == self.cells[(2, 2)]:
             return True
 
         # check if previous move was on the secondary diagonal and caused a win
-        if x + y == 2 and self.cells[(0, 2)].state == self.cells[(1, 1)].state == self.cells[(2, 0)].state:
+        if x + y == 2 and self.cells[(0, 2)] == self.cells[(1, 1)] == self.cells[(2, 0)]:
             return True
 
-        for cell in self.cells:
-            if self.cells[cell].state == -1:
-                break
-        else:
-            return 'draw'
-
-        return False
+        for r in range(3):
+            for c in range(3):
+                if self.cells[(r, c)] == -1:
+                    return False
+        return "draw"
 
 
 ui_frame = pygame.image.load("assets/ttt_assets/ui_frame.png")
@@ -69,6 +66,8 @@ o_sprite = pygame.image.load("assets/ttt_assets/o_sprite.png")
 
 pygame.font.init()
 game_font = pygame.font.Font("assets/m5x7.ttf", 35)
+SHOW_EVERY = 1
+MAX_GAMES = 25000
 
 reset_button_loc = (600, 0)
 reset_text_loc = (620, 35)
@@ -81,36 +80,6 @@ o_win_loc = (620, 335)
 bg_loc = (600, 400)
 
 
-class BoardCell:
-    def __init__(self, loc, state=None):
-        if state:
-            self.state = state
-        else:
-            self.state = -1  # -1 is empty, 0 is O, 1 is X
-        self.loc = loc   # The x, y coordinates of the cell on the game board
-        self.image = self.update_sprite()
-
-    def set_x(self):
-        self.state = 1
-        self.image = self.update_sprite()
-
-    def set_o(self):
-        self.state = 0
-        self.image = self.update_sprite()
-
-    def clear(self):
-        self.state = -1
-        self.image = self.update_sprite()
-
-    def update_sprite(self):
-        if self.state == -1:
-            return empty_sprite
-        elif self.state == 0:
-            return o_sprite
-        elif self.state == 1:
-            return x_sprite
-
-
 def main():
     game_surface = pygame.display.set_mode((800, 600))
 
@@ -118,23 +87,37 @@ def main():
     column_num = 3
     game_board = Board()
 
-    players = (HumanPlayer('HP1'),   # X Player
-               MinMaxAgent('MM2', 'o')  # O Player
+    players = (QNAgent('DQN'),  # X Player
+               RandomAgent('Random'),  # O Player
                )
     winner = "None"
 
-    total_game_count = 1
+    x_wins = []
+    o_wins = []
+
+    total_game_count = 0
     o_win_count = 0
     x_win_count = 0
 
     reset_game = False
 
+    def reset_game_for_qnas():
+        if isinstance(players[0], QNAgent):
+            players[0].new_game()
+        if isinstance(players[1], QNAgent):
+            players[1].new_game()
+
     def render():
         for r in range(row_num):
             for c in range(column_num):
-
-                cell = game_board.cells[(r, c)]
-                game_surface.blit(cell.image, (cell.loc[0]*200, cell.loc[1]*200))
+                state = game_board.cells[(c, r)]
+                if state == 1:
+                    sprite = x_sprite
+                elif state == 0:
+                    sprite = o_sprite
+                else:
+                    sprite = empty_sprite
+                game_surface.blit(sprite, (c*200, r*200))
 
         game_surface.blit(ui_frame, reset_button_loc)
         reset_text = game_font.render("Reset Game", False, [0, 0, 0], None)
@@ -154,59 +137,92 @@ def main():
 
         game_surface.blit(bg_img, bg_loc)
 
-    while True:
-
+    while total_game_count < MAX_GAMES:
         if reset_game or game_board.board_state.current == 'draw':
             total_game_count = total_game_count + 1
+
+            if total_game_count == MAX_GAMES:
+                plt.plot(range(0, MAX_GAMES-1), x_wins, 'x', linestyle='dashed')
+                plt.plot(range(0, MAX_GAMES-1), o_wins, '.', linestyle='dashed')
+                plt.show()
+
+                quit()
+
+            print(total_game_count)
+            x_wins.append(x_win_count)
+            o_wins.append(o_win_count)
             reset_game = False
             game_board = Board()
+            reset_game_for_qnas()
 
         render()
-        pygame.display.flip()
+        pygame.display.update()
 
         if game_board.board_state.current == 'x_turn':
             move = players[0].take_turn(game_board)
             if move == 'reset':
                 reset_game = True
             elif move:
-                game_board.cells[move].set_x()
+                game_board.cells[move] = 1
                 win = game_board.check_win_con(move)
 
                 if win:
                     if win == 'draw':
                         game_board.board_state.trigger('draw')
+                        if isinstance(players[0], QNAgent):
+                            players[0].reward(-1)
+                        if isinstance(players[1], QNAgent):
+                            players[1].reward(-1)
                     else:
                         game_board.board_state.trigger('x_wins')
                         winner = players[0].name
                         x_win_count = x_win_count + 1
 
+                        if isinstance(players[0], QNAgent):
+                            players[0].reward(+1)
+                        if isinstance(players[1], QNAgent):
+                            players[1].reward(-1)
+
                 else:
                     game_board.board_state.trigger('x_turn_taken')
             else:
-                pass
+                continue
 
         elif game_board.board_state.current == 'o_turn':
             move = players[1].take_turn(game_board)
             if move == 'reset':
                 reset_game = True
             elif move:
-                game_board.cells[move].set_o()
+                game_board.cells[move] = 0
                 win = game_board.check_win_con(move)
                 if win:
                     if win == 'draw':
                         game_board.board_state.trigger('draw')
+                        if isinstance(players[0], QNAgent):
+                            players[0].reward(-0.5)
+                        if isinstance(players[1], QNAgent):
+                            players[1].reward(-0.5)
                     else:
                         game_board.board_state.trigger('o_wins')
                         winner = players[1].name
                         o_win_count = o_win_count + 1
+
+                        if isinstance(players[1], QNAgent):
+                            players[1].reward(+1)
+                        if isinstance(players[0], QNAgent):
+                            players[0].reward(-1)
                 else:
                     game_board.board_state.trigger('o_turn_taken')
             else:
-                pass
+                continue
 
         elif game_board.board_state.current == 'game_over':
             reset_game = True
             game_board.board_state.trigger('reset')
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                break
 
 
 if __name__ == "__main__":

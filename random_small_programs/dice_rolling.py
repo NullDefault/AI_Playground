@@ -5,7 +5,7 @@ population_size = 100                                # individuals in one genera
 population = [None] * population_size
 avg_scores = []
 best_scores = []
-gene_length = 25                                     # the size of the "bingo" board for dice rolling
+gene_length = 1                                     # the size of the "bingo" board for dice rolling
 mutation_rate = 0.001                                # how often do genes mutate during reproduction
 valid_genes = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]   # possible gene values
 possibilities = [2,
@@ -220,7 +220,7 @@ def run_iteration(l_g):
 
 
 if __name__ == '__main__':
-    iterations = 10000
+    iterations = 1000
     make_initial_population()
     for iteration in range(iterations):
         if iteration == iterations:

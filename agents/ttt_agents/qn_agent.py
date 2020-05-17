@@ -7,13 +7,12 @@ from agents.ttt_agents.agent import Agent
 class QNAgent(Agent):
     def __init__(self, name):
         super().__init__(name)
-
         self.last_move = None
         self.board_history = []
         self.q_history = []
 
         self.model = tf.keras.Sequential()
-        self.model.add(tf.keras.layers.Dense(3**2))
+        self.model.add(tf.keras.layers.Dense(9))
         self.model.compile(optimizer='sgd', loss='mean_squared_error')
 
     def predict_q(self, board_cells):
