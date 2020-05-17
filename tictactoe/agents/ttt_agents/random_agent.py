@@ -2,7 +2,7 @@
 This agent just randomly picks an open cell when its their turn to make a move
 '''
 
-from agents.ttt_agents.agent import Agent
+from tictactoe.agents.ttt_agents.agent import Agent
 import random
 
 

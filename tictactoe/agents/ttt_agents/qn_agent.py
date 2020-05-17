@@ -1,7 +1,7 @@
 import tensorflow as tf
 import numpy as np
 
-from agents.ttt_agents.agent import Agent
+from tictactoe.agents.ttt_agents.agent import Agent
 
 
 class QNAgent(Agent):

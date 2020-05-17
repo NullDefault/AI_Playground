@@ -1,12 +1,10 @@
 import pygame
 import numpy as np
-from agents.ttt_agents.human_player import HumanPlayer
-from agents.ttt_agents.minimax_agent import MinMaxAgent
 from fysom import Fysom
 from matplotlib import pyplot as plt
 
-from agents.ttt_agents.qn_agent import QNAgent
-from agents.ttt_agents.random_agent import RandomAgent
+from tictactoe.agents.ttt_agents.qn_agent import QNAgent
+from tictactoe.agents.ttt_agents.random_agent import RandomAgent
 
 
 class Board:
@@ -65,7 +63,7 @@ x_sprite = pygame.image.load("assets/ttt_assets/x_sprite.png")
 o_sprite = pygame.image.load("assets/ttt_assets/o_sprite.png")
 
 pygame.font.init()
-game_font = pygame.font.Font("assets/m5x7.ttf", 35)
+game_font = pygame.font.Font("../assets/m5x7.ttf", 35)
 SHOW_EVERY = 1
 MAX_GAMES = 25000
 
@@ -87,7 +85,7 @@ def main():
     column_num = 3
     game_board = Board()
 
-    players = (QNAgent('DQN'),  # X Player
+    players = (RandomAgent('DQN'),  # X Player
                RandomAgent('Random'),  # O Player
                )
     winner = "None"

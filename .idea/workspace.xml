@@ -62,7 +62,7 @@
       <recent name="D:\APPS\PYTHON\PROJECTS\TicTacToeAI\agents\ttt_agents" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.dice_rolling">
+  <component name="RunManager" selected="Python.ttt_main (1)">
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <module name="SudokuSolver" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -79,28 +79,6 @@
       <option name="SCRIPT_NAME" value="" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="true" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="deep_q_learning" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="AI_Playground" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="D:\Development\Tech\Conda\python.exe" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/deep_learning" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/deep_learning/deep_q_learning.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
       <option name="REDIRECT_INPUT" value="false" />
@@ -195,6 +173,25 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="ttt_main (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="AI_Playground" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tictactoe" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/tictactoe/ttt_main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="ttt_main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="AI_Playground" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -208,7 +205,7 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/ttt_main.py" />
+      <option name="SCRIPT_NAME" value="D:\Development\Projects\python\AI_Playground\tictactoe\ttt_main.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -219,19 +216,19 @@
     </configuration>
     <list>
       <item itemvalue="Python.tensor_tutorial" />
-      <item itemvalue="Python.deep_q_learning" />
       <item itemvalue="Python.ttt_main" />
       <item itemvalue="Python.map" />
       <item itemvalue="Python.main" />
       <item itemvalue="Python.dice_rolling" />
+      <item itemvalue="Python.ttt_main (1)" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.ttt_main (1)" />
         <item itemvalue="Python.dice_rolling" />
         <item itemvalue="Python.main" />
         <item itemvalue="Python.map" />
         <item itemvalue="Python.ttt_main" />
-        <item itemvalue="Python.deep_q_learning" />
       </list>
     </recent_temporary>
   </component>

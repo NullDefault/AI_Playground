@@ -2,7 +2,7 @@
 Agent that uses the minimax algorithm to make their moves
 '''
 
-from agents.ttt_agents.agent import Agent
+from tictactoe.agents.ttt_agents.agent import Agent
 from random import randint
 
 '''
