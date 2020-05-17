@@ -63,7 +63,7 @@ x_sprite = pygame.image.load("assets/ttt_assets/x_sprite.png")
 o_sprite = pygame.image.load("assets/ttt_assets/o_sprite.png")
 
 pygame.font.init()
-game_font = pygame.font.Font("../assets/m5x7.ttf", 35)
+game_font = pygame.font.Font("assets/m5x7.ttf", 35)
 SHOW_EVERY = 1
 MAX_GAMES = 25000
 
