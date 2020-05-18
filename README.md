@@ -15,9 +15,9 @@ This is my all purpose repo for AI-related projects. I use it to back up my work
 - A variety of small deep learning and q learning programs
 
 ### Screenshots
-2 MinMax Agents playing each other in Tic Tac Toe
+2 MinMax Agents playing each other in Tic Tac Toe<br>
 ![minmaxdemo](./screenshots/minmax_demo.gif)
-NEAT algorithm playing Flappy Bird
+<br>NEAT algorithm playing Flappy Bird<br>
 ![NEAT](./screenshots/neat.gif)
 
 
