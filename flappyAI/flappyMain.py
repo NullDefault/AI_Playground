@@ -45,7 +45,7 @@ def update_state(birds, pipes, base, score, genes, nets):
 
     for x, bird in enumerate(birds):
         bird.move()
-        genes[x].fitness += 0.1
+        genes[x].fitness += 0.01
 
         output = nets[x].activate((bird.y,
                                    abs(bird.y - pipes[pipe_ix].height),
@@ -77,7 +77,7 @@ def update_state(birds, pipes, base, score, genes, nets):
     if add_pipe:
         score += 1
         for g in genes:
-            g.fitness += 5
+            g.fitness += 3
         pipes.append(Pipe(WIDTH+100 - randint(0, 100)))
 
     for pipe in pipes_to_remove:
