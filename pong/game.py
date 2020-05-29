@@ -2,6 +2,9 @@ from pong.ball import Ball
 from pong.paddle import Paddle
 from pygame import Rect, draw, font
 
+from pong.paddle_controllers.aimbot import AimBot
+from pong.paddle_controllers.random import Random
+
 WHITE = (255, 255, 255)
 BLACK = (0,     0,   0)
 BLUE  = (0,     0, 255)
@@ -11,17 +14,20 @@ GREEN = (0,   255,   0)
 font.init()
 game_font = font.SysFont("Comic Sans MS", 20)
 
+aimbot = AimBot()
+random = Random()
+
 
 class Game:
     def __init__(self):
         self.board = Rect((0, 0), (1000, 500))
-        self.paddles = [Paddle(True, self.board), Paddle(False, self.board)]
+        self.paddles = [Paddle(True, self.board, aimbot), Paddle(False, self.board, aimbot)]
         self.ball = Ball(self.board)
         self.scores = [0, 0]
 
     def next_frame(self):
         for paddle in self.paddles:
-            paddle.move()
+            paddle.move(self.ball)
 
         score_change = self.ball.update_pos(self.paddles, self.board)
 

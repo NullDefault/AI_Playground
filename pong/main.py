@@ -11,7 +11,7 @@ done = False
 game = Game()
 
 while not done:
-    clock.tick(60)
+    clock.tick(600)
     pg.display.flip()
 
     game.next_frame()

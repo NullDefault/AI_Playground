@@ -1,4 +1,5 @@
 from random import randint
+from pygame import Vector2
 
 
 class Ball:
@@ -6,13 +7,11 @@ class Ball:
         self.pos = []
         self.vel = []
         self.reset(board)
-        # How much the ball speeds up on collision
-        self.acceleration = 1.1
         # Effective size of the ball
         self.radius = 10
 
     def update_pos(self, player_paddles, board):
-        self.pos = (int(self.pos[0] + self.vel[0]), int(self.pos[1] + self.vel[1]))
+        self.pos = int(self.pos[0] + self.vel[0]), int(self.pos[1] + self.vel[1])
         return self.handle_collisions(player_paddles, board)
 
     def reset(self, board):
@@ -24,20 +23,18 @@ class Ball:
         # ball collision check on top and bottom walls
         if int(self.pos[1]) <= self.radius:
             self.pos = (self.pos[0], self.radius)
-            self.vel[1] = -self.acceleration * self.vel[1]
+            self.vel[1] = -self.vel[1]
 
         elif int(self.pos[1]) >= board.height + 1 - self.radius:
             self.pos = (self.pos[0], board.height - self.radius)
-            self.vel[1] = -self.acceleration * self.vel[1]
+            self.vel[1] = -self.vel[1]
 
         # collide with left paddle
         if paddles[0].rect.collidepoint(self.pos[0] - self.radius, self.pos[1]):
-            self.pos = (paddles[0].rect.right, self.pos[1])
-            self.vel[0] = -self.acceleration * self.vel[0]
+            self.vel[0] = -self.vel[0]
         # collide with right paddle
         elif paddles[1].rect.collidepoint(self.pos[0] + self.radius, self.pos[1]):
-            self.pos = (paddles[1].rect.left, self.pos[1])
-            self.vel[0] = -self.acceleration * self.vel[0]
+            self.vel[0] = -self.vel[0]
 
         if self.pos[0] < 0:
             self.reset(board)
