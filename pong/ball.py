@@ -1,5 +1,4 @@
 from random import randint
-from pygame import Vector2
 
 
 class Ball:
@@ -18,6 +17,8 @@ class Ball:
         self.pos = board.center
         x_dir = -4 if randint(0, 1) == 0 else 4
         self.vel = [x_dir, randint(-4, 4)]
+        if self.vel[1] == 0:
+            self.vel = [x_dir,  -2 if randint(0, 1) == 0 else 2]
 
     def handle_collisions(self, paddles, board):
         # ball collision check on top and bottom walls
