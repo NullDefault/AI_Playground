@@ -48,7 +48,7 @@ def update_state(birds, pipes, base, score, genes, nets):
         genes[x].fitness += 0.01
 
         output = nets[x].activate((bird.y,
-                                   abs(bird.y - pipes[pipe_ix].height),
+                                   abs(bird.y - pipes[pipe_ix].HEIGHT),
                                    abs(bird.y - pipes[pipe_ix].bot)))
 
         if output[0] > 0.5:
